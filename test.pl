@@ -1,17 +1,32 @@
 use Test;
-BEGIN { plan tests => 5 };
+
+BEGIN
+{
+ @strings = (
+	     ['Random data here' => 1],
+	     [(chr(0x0) x 200 . '1' x 200) => 20],
+	     [(chr(0xff) x 200 . chr(0x0) x 200) => 20],
+	    );
+ 
+ plan tests => 2 * scalar @strings
+};
+
 use Algorithm::InversionList;
-ok(1);
 
-my $data = "Random data here";
-my @inv = invlist($data);
-ok(scalar @inv);
-my $out = data_from_invlist(@inv);
-ok($out, $data);
+do_test($_->[0], $_->[1]) foreach @strings;
 
-$data = "\0" x 200 . 1 x 200;
-$data = $data x 20;
-my @inv = invlist($data);
-ok(scalar @inv);
-$out = data_from_invlist(@inv);
-ok($out, $data);
+sub do_test
+{
+ my $data = shift @_;
+ my $reps = shift @_ || 1;
+# print 'Test pattern   ', unpack("b*", $data), "\n";
+
+ $data x= $reps;
+ 
+ my $inv = invlist($data);
+# print "Inversion list: @$inv\n";
+ ok(scalar @$inv);
+ my $out = data_from_invlist($inv);
+# print 'Output pattern ', unpack("b*", $out), "\n";
+ ok($out, $data);
+}
