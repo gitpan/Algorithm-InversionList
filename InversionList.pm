@@ -11,7 +11,7 @@ our @ISA = qw(Exporter);
 our @EXPORT = qw(
 invlist data_from_invlist	
 );
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 sub invlist
 {
@@ -29,14 +29,12 @@ sub invlist
  my $length = scalar @unpacked * 8;
  my $current = vec($string, 0, 1);
  my $new;
- my $count = 0;
  my @list;
 
  push @list, 0 if $current;
 
  foreach my $offset (0..$length)
  {  
-  $count++;
   $new = vec($string, $offset, 1);
   if ($new != $current)
   {
@@ -45,7 +43,7 @@ sub invlist
   $current = $new;
  }
 
- push @list, $length;
+ push @list, $length unless exists $list[-1] && $list[-1] == $length;
 
  return \@list;
 }

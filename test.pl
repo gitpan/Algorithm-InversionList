@@ -3,6 +3,7 @@ use Test;
 BEGIN
 {
  @strings = (
+	     ['' => 1],
 	     ['Random data here' => 1],
 	     [(chr(0x0) x 200 . '1' x 200) => 20],
 	     [(chr(0xff) x 200 . chr(0x0) x 200) => 20],
@@ -25,7 +26,7 @@ sub do_test
  
  my $inv = invlist($data);
 # print "Inversion list: @$inv\n";
- ok(scalar @$inv);
+ ok(scalar @$inv || !length($data));
  my $out = data_from_invlist($inv);
 # print 'Output pattern ', unpack("b*", $out), "\n";
  ok($out, $data);
